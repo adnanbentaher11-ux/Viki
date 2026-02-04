@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Viki 💖</title>
+  <style>
+    :root{
+      --bg1:#fff0f6;
+      --bg2:#ffe3f1;
+      --card:#ffffffcc;
+      --text:#3a2a36;
+      --yes:#ff4d88;
+      --yes2:#ff77aa;
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, var(--bg2), transparent 70%),
+        radial-gradient(900px 700px at 80% 30%, #e9d5ff, transparent 65%),
+        linear-gradient(180deg, var(--bg1), #fff);
+      overflow:hidden;
+    }
+
+    /* Floating hearts background */
+    .heart{
+      position:fixed;
+      bottom:-40px;
+      font-size:18px;
+      opacity:.75;
+      animation: floatUp linear forwards;
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.08));
+      user-select:none;
+      pointer-events:none;
+    }
+    @keyframes floatUp{
+      to{ transform: translateY(-110vh) rotate(360deg); opacity:0; }
+    }
+
+    .card{
+      width:min(720px, 92vw);
+      padding:28px 22px;
+      border-radius:24px;
+      background:var(--card);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.6);
+      backdrop-filter: blur(10px);
+      text-align:center;
+      position:relative;
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.7);
+      border:1px solid rgba(255, 77, 136, .25);
+      font-weight:700;
+    }
+
+    h1{
+      margin:18px 0 6px;
+      font-size: clamp(28px, 4.8vw, 44px);
+      line-height:1.08;
+    }
+    .sub{
+      margin:0 0 18px;
+      font-size: clamp(14px, 2.4vw, 18px);
+      opacity:.9;
+    }
+
+    .question{
+      margin-top:8px;
+      font-size: clamp(20px, 3.4vw, 30px);
+      font-weight:800;
+    }
+    .question span{
+      background: linear-gradient(90deg, #ff4d88, #a855f7);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .arena{
+      margin:22px auto 10px;
+      width:min(540px, 86vw);
+      height:220px;
+      border-radius:22px;
+      background: rgba(255,255,255,.7);
+      border:1px dashed rgba(255, 77, 136, .25);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      padding:14px 18px;
+      font-size:18px;
+      font-weight:800;
+      cursor:pointer;
+      position:absolute;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+      box-shadow: 0 14px 28px rgba(0,0,0,.10);
+      transition: transform .08s ease;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: scale(.98); }
+
+    #yesBtn{
+      left:28%;
+      top:62%;
+      background: linear-gradient(135deg, var(--yes), var(--yes2));
+      color:white;
+    }
+    #noBtn{
+      left:56%;
+      top:62%;
+      background: #fff;
+      border: 2px solid rgba(255, 77, 136, .35);
+      color:#b4235a;
+    }
+
+    .footer{
+      margin-top:14px;
+      font-size:14px;
+      opacity:.85;
+    }
+
+    /* Success overlay */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background: rgba(255, 240, 246, .55);
+      backdrop-filter: blur(10px);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease;
+    }
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .modal{
+      width:min(680px, 92vw);
+      padding:26px 22px;
+      border-radius:26px;
+      background:white;
+      box-shadow: var(--shadow);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .modal h2{
+      margin:6px 0 8px;
+      font-size: clamp(26px, 4.2vw, 40px);
+    }
+    .modal p{
+      margin:0;
+      font-size: clamp(16px, 2.6vw, 20px);
+      opacity:.9;
+    }
+    .big{
+      font-size:52px;
+      margin:10px 0 6px;
+    }
+    .from{
+      margin-top:14px;
+      font-weight:900;
+      font-size: clamp(16px, 2.6vw, 22px);
+      color:#b4235a;
+    }
+    .close{
+      margin-top:16px;
+      padding:12px 16px;
+      border-radius:999px;
+      border:none;
+      background:#111827;
+      color:white;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    /* Confetti */
+    .confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .piece{
+      position:absolute;
+      width:10px;
+      height:16px;
+      opacity:.9;
+      border-radius:3px;
+      transform: translateY(-10vh) rotate(0deg);
+      animation: fall linear forwards;
+    }
+    @keyframes fall{
+      to{
+        transform: translateY(110vh) rotate(720deg);
+        opacity:0.95;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card" aria-label="Valentine card">
+    <div class="badge">💌 Valentine Question • 🥰</div>
+
+    <h1>Hey <span style="color:#ff4d88;">Viki</span> 🌷</h1>
+    <p class="sub">I have something important to ask… 🌙✨</p>
+
+    <div class="question">Will you be my <span>Valentine</span>? 💖</div>
+
+    <div class="arena" id="arena" aria-label="button area">
+      <button class="btn" id="yesBtn">Yes 💘</button>
+      <button class="btn" id="noBtn">No 🙈</button>
+    </div>
+
+    <div class="footer">Hint: the “No” button is shy 😅💞</div>
+  </div>
+
+  <!-- Success -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="big">🎉💗😍💗🎉</div>
+      <h2>YAAAY!! You made me the happiest! 💘</h2>
+      <p>Can’t wait to celebrate with you, Viki 🌹✨</p>
+      <div class="from">From Adnan — I love you ❤️</div>
+      <button class="close" id="closeBtn">Aww 🥹</button>
+    </div>
+  </div>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    const arena = document.getElementById('arena');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const confetti = document.getElementById('confetti');
+
+    // Place No button randomly inside the arena
+    function moveNoButton(){
+      const arenaRect = arena.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      // padding to keep inside
+      const pad = 12;
+      const maxX = arenaRect.width - btnRect.width - pad;
+      const maxY = arenaRect.height - btnRect.height - pad;
+
+      const x = Math.max(pad, Math.random() * maxX);
+      const y = Math.max(pad, Math.random() * maxY);
+
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
+    }
+
+    // Make "No" run away on hover/touch
+    noBtn.addEventListener('mouseenter', moveNoButton);
+    noBtn.addEventListener('mousemove', moveNoButton);
+
+    // Mobile: run away when finger approaches
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, {passive:false});
+
+    // Safety: even if clicked, it escapes (but still "unclickable vibe")
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    // Yes -> show overlay + confetti
+    function popConfetti(){
+      confetti.innerHTML = '';
+      const pieces = 120;
+      for(let i=0;i<pieces;i++){
+        const p = document.createElement('div');
+        p.className = 'piece';
+        // random color without hardcoding a single palette
+        const hue = Math.floor(Math.random()*360);
+        p.style.background = `hsl(${hue} 90% 70%)`;
+        p.style.left = (Math.random()*100) + 'vw';
+        p.style.animationDuration = (2.2 + Math.random()*1.8) + 's';
+        p.style.animationDelay = (Math.random()*0.25) + 's';
+        p.style.transform = `translateY(-10vh) rotate(${Math.random()*180}deg)`;
+        confetti.appendChild(p);
+      }
+      // Let it disappear after a bit
+      setTimeout(() => { confetti.innerHTML = ''; }, 4200);
+    }
+
+    yesBtn.addEventListener('click', () => {
+      overlay.classList.add('show');
+      popConfetti();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('show');
+    });
+
+    // Cute floating hearts in the background
+    const heartEmojis = ["💗","💖","💘","💝","❤️","💕","💞","🌸","✨"];
+    function spawnHeart(){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+      h.style.left = (Math.random()*100) + 'vw';
+      h.style.fontSize = (14 + Math.random()*18) + 'px';
+      h.style.animationDuration = (3.5 + Math.random()*3.5) + 's';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 8000);
+    }
+    setInterval(spawnHeart, 350);
+
+    // Start with a little "No" movement so she notices 😄
+    setTimeout(moveNoButton, 600);
+  </script>
+</body>
+</html>
